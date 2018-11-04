@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Group-Project-1/Presentation/issues"
   },
-  "homepage": "https://github.com/Group-Project-1/Presentation#readme"
+  "homepage": "https://github.com/Group-Project-1/Presentation#readme",
+  "devDependencies": {
+    "cssnano": "^4.1.7"
+  }
 }
