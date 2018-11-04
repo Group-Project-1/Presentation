@@ -1,0 +1,20 @@
+{
+  "name": "Presentation",
+  "version": "1.0.0",
+  "description": "My Test - Samson My Test - Victor",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Group-Project-1/Presentation.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Group-Project-1/Presentation/issues"
+  },
+  "homepage": "https://github.com/Group-Project-1/Presentation#readme"
+}
