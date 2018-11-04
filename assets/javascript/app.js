@@ -1,10 +1,11 @@
+const storageHelper = require('./storageHelper');
 
 $(document).ready(function () {
   /**
    * 
    * GLOBALS
    */
-
+  storageHelper.setLocalStorage('name','james');
   //  Initialize Firebase
   var config = {
     apiKey: "AIzaSyAaBxgXJBVE_9C8qzRu_ebV1sscAVqiers",
