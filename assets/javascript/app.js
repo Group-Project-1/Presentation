@@ -176,9 +176,11 @@ $(document).ready(function () {
     createEventButtons(myEvents, $(".events"));
 
     $(".eventContainer").on("click", function (e) {
-      if (loggedInUserID !== null) {
+
+      if (loggedInUserID != null) {
         var self = $(this);
-        var ref = database.ref();
+        console.log(loggedInUserID);
+        var ref = database.ref(loggedInUserID);
         var event = self.data("event");
         ref.once("value").then(function (snapshot) {
           var selectedEvents = snapshot.child("selectedEvents").val();
@@ -189,7 +191,7 @@ $(document).ready(function () {
           if (!selectedEvents.includes(event)) {
             selectedEvents.push(event);
           }
-          database.ref().set({
+          ref.set({
             "selectedEvents": selectedEvents
           });
           self.remove();
