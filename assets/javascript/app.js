@@ -178,9 +178,7 @@ $(document).ready(function () {
 
   database.ref().on("value", function (snapshot) {
     if (loggedInUserID !== null){
-      console.log(loggedInUserID);
       database.ref(loggedInUserID).on("value", function (snap) {
-        console.log("2 " + loggedInUserID);
         var myEvents = snap.child("selectedEvents").val();
         createEventButtons(myEvents, $(".myEvents"));
       });
@@ -222,14 +220,12 @@ $(document).ready(function () {
   function populateList(response) {
 
     var myEvents = response.events;
-    console.log(response);
     createEventButtons(myEvents, $(".events"));
 
     $(".eventContainer").on("click", function (e) {
 
       if (loggedInUserID !== null) {
         var self = $(this);
-        console.log(loggedInUserID);
         var ref = database.ref(loggedInUserID);
         if (ref === null){
           database.ref(loggedInUserID).set({
