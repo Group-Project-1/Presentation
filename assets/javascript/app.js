@@ -32,6 +32,35 @@ $(document).ready(function () {
   var loggedInUserID = undefined;
   var loggedInUserName = undefined;
 
+   /* add an item to the local storage */
+   var setLocalStorage = function (key, value) {
+    localStorage.setItem(key, value);
+  };
+
+  /* retreives an item from the local storage based on the key */
+  var getLocalStorage = function (key) {
+    return localStorage.getItem(key);
+  }
+
+  /* removes an item from the local storage based on the key */
+  var deleteLocalStorage = function (key) {
+    console.log(key);
+    localStorage.removeItem(key);
+  }
+
+  var checkUserAlreadyLoggedIn = function (){
+    loggedInUserID = getLocalStorage('loggedInUserID');
+    loggedInUserName = getLocalStorage('loggedInUserName');
+    console.log(loggedInUserID);
+    if(loggedInUserID !== null && loggedInUserName !== null){
+            $("#sign-in-form").empty();
+            $(".dropdown").text("Welcome! "+ loggedInUserName);
+            $("#logout").css("visibility","visible");
+            $("#my-events").css("visibility","visible");
+    }
+  }
+  checkUserAlreadyLoggedIn();
+
   /**
    *  geoIP defaults to empty string
    *  rangeInMile defaults to 10
@@ -91,10 +120,7 @@ $(document).ready(function () {
     event.preventDefault();
     var username = $('#username').val().trim();
     var password = $('#password').val().trim();
-    var isUser = checkExistingUser(username, password);
-
-    console.log(loggedInUserID);
-    console.log(loggedInUserName);
+    var isUser = checkExistingUser(username,password);
   });
 
   $('#sigup-submit').on("click", function (event) {
@@ -108,11 +134,27 @@ $(document).ready(function () {
       password: password
     }
     createUser(data);
+    setLocalStorage('newUserId',userID);
+    setLocalStorage('newUserName',userName);
+    window.location.href="index.html";
+  });
+
+  $("#logout").on('click',function(){
+    loggedInUserID = undefined;
+    loggedInUserName = undefined;
+    deleteLocalStorage('loggedInUserID');
+    deleteLocalStorage('loggedInUserName');
+    location.href = 'index.html';
+
   });
 
   // click function rendering search input. 
   $("#search").on("click", function (event) {
+    console.log(loggedInUserID);
+    console.log(loggedInUserName);
+    
     $(".events").empty();
+    $(".checkmark").prop("checked", false);
     event.preventDefault();
 
     var taxonomies = [];
@@ -122,7 +164,7 @@ $(document).ready(function () {
       $(".events").empty();
     });
 
-    seatgeek.getEvents(11, false, taxonomies);
+    seatgeek.getEvents(11, true, taxonomies);
 
     //console.log(seatgeek.events);
     //populateList(seatgeek);
@@ -135,8 +177,16 @@ $(document).ready(function () {
   /*************************************************** */
 
   database.ref().on("value", function (snapshot) {
-    var myEvents = snapshot.child("selectedEvents").val();
-    createEventButtons(myEvents, $(".myEvents"));
+    if (loggedInUserID !== null){
+      console.log(loggedInUserID);
+      database.ref(loggedInUserID).on("value", function (snap) {
+        console.log("2 " + loggedInUserID);
+        var myEvents = snap.child("selectedEvents").val();
+        createEventButtons(myEvents, $(".myEvents"));
+      });
+    }
+    
+    
   });
 
 
@@ -177,11 +227,21 @@ $(document).ready(function () {
 
     $(".eventContainer").on("click", function (e) {
 
-      if (loggedInUserID != null) {
+      if (loggedInUserID !== null) {
         var self = $(this);
         console.log(loggedInUserID);
         var ref = database.ref(loggedInUserID);
+        if (ref === null){
+          database.ref(loggedInUserID).set({
+            "selectedEvents": selectedEvents
+          });
+        }
         var event = self.data("event");
+
+
+
+
+
         ref.once("value").then(function (snapshot) {
           var selectedEvents = snapshot.child("selectedEvents").val();
           if (selectedEvents === null) {
@@ -191,7 +251,7 @@ $(document).ready(function () {
           if (!selectedEvents.includes(event)) {
             selectedEvents.push(event);
           }
-          ref.set({
+          database.ref(loggedInUserID).set({
             "selectedEvents": selectedEvents
           });
           self.remove();
@@ -209,6 +269,10 @@ $(document).ready(function () {
   /*************************************************** */
   //End List Populators and event click functions
   /*************************************************** */
+
+  $("#cancel").on("click", function() {
+    $(".myEvents").empty();
+  })
 
   /********** SignUp Helper's ************/
 
@@ -244,6 +308,14 @@ $(document).ready(function () {
           loggedInUserID = data.val().userID;
           loggedInUserName = data.val().userName;
           isUser = true;
+            $("#sign-in-form").empty();
+            $(".dropdown").text("Welcome! "+ loggedInUserName);
+            $("#logout").css("visibility","visible");
+            $("#my-events").css("visibility","visible");
+
+            setLocalStorage('loggedInUserID',loggedInUserID);
+            setLocalStorage('loggedInUserName',loggedInUserName);
+            
         }
       });
     });
@@ -273,24 +345,9 @@ $(document).ready(function () {
     }, function (errorObject) {
       console.log("Error " + errorObject.code);
     });
-
   }
 
-
-  /* add an item to the local storage */
-  var setLocalStorage = function (key, val) {
-    localStorage.setItem(key, value);
-  };
-
-  /* retreives an item from the local storage based on the key */
-  var getLocalStorage = function (key) {
-    localStorage.getItem(key);
-  }
-
-  /* removes an item from the local storage based on the key */
-  var deleteLocalStorage = function (key) {
-    localStorage.removeItem(key);
-  }
+ 
 
 }
 
