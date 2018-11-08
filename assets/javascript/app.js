@@ -134,7 +134,7 @@ $(document).ready(function () {
   //List Populators and event click functions
   /*************************************************** */
 
-  database.ref().on("value", function (snapshot) {
+  database.ref(loggedInUserID).on("value", function (snapshot) {
     var myEvents = snapshot.child("selectedEvents").val();
     createEventButtons(myEvents, $(".myEvents"));
   });
