@@ -135,6 +135,7 @@ $(document).ready(function () {
   /*************************************************** */
 
   database.ref(loggedInUserID).on("value", function (snapshot) {
+    console.log(loggedInUserID);
     var myEvents = snapshot.child("selectedEvents").val();
     createEventButtons(myEvents, $(".myEvents"));
   });
